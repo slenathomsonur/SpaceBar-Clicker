@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Spacebar Clicker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #c9d1d9;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-bottom: 1px solid #30363d;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #58a6ff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #8b949e;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .stat-title {
+            color: #8b949e;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            color: #58a6ff;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .click-area {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            user-select: none;
+        }
+        
+        .click-area:active {
+            transform: scale(0.98);
+            background: #1c2129;
+        }
+        
+        .spacebar-icon {
+            font-size: 3rem;
+            color: #58a6ff;
+            margin-bottom: 15px;
+        }
+        
+        .click-instruction {
+            color: #8b949e;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .click-power {
+            color: #3fb950;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .upgrades-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .upgrade {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .upgrade:hover {
+            border-color: #58a6ff;
+            transform: translateY(-2px);
+        }
+        
+        .upgrade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .upgrade-title {
+            color: #c9d1d9;
+            font-size: 1.2rem;
+        }
+        
+        .upgrade-cost {
+            color: #f85149;
+            font-weight: bold;
+        }
+        
+        .upgrade-description {
+            color: #8b949e;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .buy-btn {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .buy-btn:hover {
+            background: #2ea043;
+        }
+        
+        .buy-btn:disabled {
+            background: #30363d;
+            cursor: not-allowed;
+        }
+        
+        .achievements-container {
+            margin-bottom: 30px;
+        }
+        
+        .achievement {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        
+        .achievement.unlocked {
+            opacity: 1;
+            border-color: #daaa3f;
+        }
+        
+        .achievement-icon {
+            color: #daaa3f;
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+        
+        .achievement-info {
+            flex: 1;
+        }
+        
+        .achievement-title {
+            color: #c9d1d9;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-desc {
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: auto;
+            padding: 20px;
+            color: #8b949e;
+            font-size: 0.9rem;
+            border-top: 1px solid #30363d;
+            width: 100%;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #238636;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        @media (max-width: 768px) {
+            .stats-container {
+                flex-direction: column;
+            }
+            
+            .upgrades-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fab fa-github"></i> GitHub Spacebar Clicker</h1>
+            <p class="description">Press the spacebar to earn commits. Buy upgrades to increase your coding productivity!</p>
+        </header>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-title">Total Commits</div>
+                <div class="stat-value" id="commits-count">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-title">Commits Per Click</div>
+                <div class="stat-value" id="click-value">1</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-title">Commits Per Second</div>
+                <div class="stat-value" id="auto-commits">0</div>
+            </div>
+        </div>
+        
+        <div class="click-area" id="click-area">
+            <div class="spacebar-icon"><i class="fas fa-space-bar"></i></div>
+            <div class="click-instruction">Click or Press Spacebar</div>
+            <div class="click-power">+<span id="click-power">1</span> commit per click</div>
+        </div>
+        
+        <h2>Upgrades</h2>
+        <div class="upgrades-container" id="upgrades-container">
+            <!-- Upgrades will be added here by JavaScript -->
+        </div>
+        
+        <h2>Achievements</h2>
+        <div class="achievements-container" id="achievements-container">
+            <!-- Achievements will be added here by JavaScript -->
+        </div>
+    </div>
+    
+    <footer>
+        <p>GitHub Spacebar Clicker - A fun incremental game for developers</p>
+    </footer>
+
+    <div class="notification" id="notification">
+        Achievement Unlocked: <span id="achievement-name"></span>
+    </div>
+
+    <script>
+        // Game state
+        const game = {
+            commits: 0,
+            clickPower: 1,
+            autoCommitRate: 0,
+            upgrades: [
+                {
+                    id: 'better-keyboard',
+                    name: 'Mechanical Keyboard',
+                    description: 'A satisfying clicky keyboard that helps you code faster',
+                    baseCost: 15,
+                    cost: 15,
+                    owned: 0,
+                    effect: 1,
+                    costMultiplier: 1.5
+                },
+                {
+                    id: 'coffee',
+                    name: 'Coffee Maker',
+                    description: 'Caffeine boost to increase your coding speed',
+                    baseCost: 50,
+                    cost: 50,
+                    owned: 0,
+                    effect: 2,
+                    costMultiplier: 1.6
+                },
+                {
+                    id: 'dual-monitors',
+                    name: 'Dual Monitors',
+                    description: 'Double your screen space, double your productivity',
+                    baseCost: 100,
+                    cost: 100,
+                    owned: 0,
+                    effect: 5,
+                    costMultiplier: 1.7
+                },
+                {
+                    id: 'auto-committer',
+                    name: 'Auto Committer',
+                    description: 'Automatically makes commits for you over time',
+                    baseCost: 200,
+                    cost: 200,
+                    owned: 0,
+                    effect: 0.5,
+                    costMultiplier: 1.8
+                },
+                {
+                    id: 'standing-desk',
+                    name: 'Standing Desk',
+                    description: 'Better ergonomics for longer coding sessions',
+                    baseCost: 500,
+                    cost: 500,
+                    owned: 0,
+                    effect: 10,
+                    costMultiplier: 1.9
+                },
+                {
+                    id: 'github-copilot',
+                    name: 'GitHub Copilot',
+                    description: 'AI pair programmer that helps you write code faster',
+                    baseCost: 1000,
+                    cost: 1000,
+                    owned: 0,
+                    effect: 20,
+                    costMultiplier: 2.0
+                }
+            ],
+            achievements: [
+                {
+                    id: 'first-commit',
+                    name: 'First Commit',
+                    description: 'Make your first commit',
+                    unlocked: false,
+                    condition: game => game.commits >= 1
+                },
+                {
+                    id: 'hundred-commits',
+                    name: '100 Commits',
+                    description: 'Reach 100 commits',
+                    unlocked: false,
+                    condition: game => game.commits >= 100
+                },
+                {
+                    id: 'thousand-commits',
+                    name: '1K Commits',
+                    description: 'Reach 1,000 commits',
+                    unlocked: false,
+                    condition: game => game.commits >= 1000
+                },
+                {
+                    id: 'first-upgrade',
+                    name: 'First Upgrade',
+                    description: 'Purchase your first upgrade',
+                    unlocked: false,
+                    condition: game => game.upgrades.some(u => u.owned > 0)
+                },
+                {
+                    id: 'auto-commit',
+                    name: 'Automation',
+                    description: 'Earn 50 commits automatically',
+                    unlocked: false,
+                    condition: game => game.autoCommitRate >= 50
+                }
+            ]
+        };
+
+        // DOM elements
+        const commitsCountElement = document.getElementById('commits-count');
+        const clickValueElement = document.getElementById('click-value');
+        const autoCommitsElement = document.getElementById('auto-commits');
+        const clickPowerElement = document.getElementById('click-power');
+        const clickAreaElement = document.getElementById('click-area');
+        const upgradesContainerElement = document.getElementById('upgrades-container');
+        const achievementsContainerElement = document.getElementById('achievements-container');
+        const notificationElement = document.getElementById('notification');
+        const achievementNameElement = document.getElementById('achievement-name');
+
+        // Format numbers with commas
+        function formatNumber(num) {
+            return num.toLocaleString();
+        }
+
+        // Show notification for achievement
+        function showAchievementNotification(achievementName) {
+            achievementNameElement.textContent = achievementName;
+            notificationElement.classList.add('show');
+            
+            setTimeout(() => {
+                notificationElement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update the UI with current game state
+        function updateUI() {
+            commitsCountElement.textContent = formatNumber(game.commits);
+            clickValueElement.textContent = formatNumber(game.clickPower);
+            autoCommitsElement.textContent = formatNumber(game.autoCommitRate);
+            clickPowerElement.textContent = formatNumber(game.clickPower);
+            
+            // Update upgrades
+            upgradesContainerElement.innerHTML = '';
+            game.upgrades.forEach(upgrade => {
+                const upgradeElement = document.createElement('div');
+                upgradeElement.className = 'upgrade';
+                upgradeElement.innerHTML = `
+                    <div class="upgrade-header">
+                        <div class="upgrade-title">${upgrade.name}</div>
+                        <div class="upgrade-cost">${formatNumber(upgrade.cost)} commits</div>
+                    </div>
+                    <div class="upgrade-description">${upgrade.description}</div>
+                    <div class="upgrade-stats">Owned: ${upgrade.owned} | +${formatNumber(upgrade.effect)} commits${upgrade.id === 'auto-committer' ? '/sec' : '/click'}</div>
+                    <button class="buy-btn" ${game.commits < upgrade.cost ? 'disabled' : ''}>Buy</button>
+                `;
+                
+                const buyButton = upgradeElement.querySelector('.buy-btn');
+                buyButton.addEventListener('click', () => buyUpgrade(upgrade));
+                
+                upgradesContainerElement.appendChild(upgradeElement);
+            });
+            
+            // Update achievements
+            achievementsContainerElement.innerHTML = '';
+            game.achievements.forEach(achievement => {
+                const achievementElement = document.createElement('div');
+                achievementElement.className = `achievement ${achievement.unlocked ? 'unlocked' : ''}`;
+                achievementElement.innerHTML = `
+                    <div class="achievement-icon">
+                        <i class="fas ${achievement.unlocked ? 'fa-trophy' : 'fa-lock'}"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <div class="achievement-title">${achievement.name}</div>
+                        <div class="achievement-desc">${achievement.description}</div>
+                    </div>
+                `;
+                
+                achievementsContainerElement.appendChild(achievementElement);
+            });
+        }
+
+        // Handle buying an upgrade
+        function buyUpgrade(upgrade) {
+            if (game.commits >= upgrade.cost) {
+                game.commits -= upgrade.cost;
+                upgrade.owned++;
+                
+                // Apply upgrade effect
+                if (upgrade.id === 'auto-committer') {
+                    game.autoCommitRate += upgrade.effect;
+                } else {
+                    game.clickPower += upgrade.effect;
+                }
+                
+                // Increase cost for next purchase
+                upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(upgrade.costMultiplier, upgrade.owned));
+                
+                // Check achievements
+                checkAchievements();
+                
+                // Update UI
+                updateUI();
+            }
+        }
+
+        // Handle click or spacebar press
+        function handleClick() {
+            game.commits += game.clickPower;
+            checkAchievements();
+            updateUI();
+        }
+
+        // Check and unlock achievements
+        function checkAchievements() {
+            game.achievements.forEach(achievement => {
+                if (!achievement.unlocked && achievement.condition(game)) {
+                    achievement.unlocked = true;
+                    showAchievementNotification(achievement.name);
+                }
+            });
+        }
+
+        // Auto-commit logic
+        function autoCommit() {
+            if (game.autoCommitRate > 0) {
+                game.commits += game.autoCommitRate / 10; // Update 10 times per second for smoother animation
+                checkAchievements();
+                updateUI();
+            }
+        }
+
+        // Initialize the game
+        function initGame() {
+            // Set up click event
+            clickAreaElement.addEventListener('click', handleClick);
+            
+            // Set up spacebar press event - PREVENT DEFAULT BEHAVIOR
+            document.addEventListener('keydown', (event) => {
+                if (event.code === 'Space') {
+                    // Prevent spacebar from scrolling the page
+                    event.preventDefault();
+                    
+                    handleClick();
+                    // Add visual feedback for spacebar press
+                    clickAreaElement.style.transform = 'scale(0.98)';
+                    clickAreaElement.style.backgroundColor = '#1c2129';
+                    setTimeout(() => {
+                        clickAreaElement.style.transform = '';
+                        clickAreaElement.style.backgroundColor = '';
+                    }, 100);
+                }
+            });
+            
+            // Set up auto-commit interval
+            setInterval(autoCommit, 100);
+            
+            // Initial UI update
+            updateUI();
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
